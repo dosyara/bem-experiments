@@ -128,3 +128,51 @@ var BEMJS = function() {
 
         return elem;
     };
+
+var BEMJSON = [
+
+    //b-link
+    { block: 'b-link', url: 'yandex.ru', content: 'yandex' },
+    block('b-link', { url: 'yandex.ru' })('yandex'),
+
+    //b-form-button
+    {
+        block: 'b-form-button',
+        mods: { theme: 'grey-s', size: 's' },
+        type: 'submit',
+        name: 'my-submit',
+        value: 'my-value',
+        content: 'Я.Submit'
+    },
+    block('b-form-button', {
+            type: 'submit',
+            name: 'my-submit',
+            value: 'my-value'
+        })
+        .mods({
+            theme: 'grey-s',
+            size: 's'
+        })('Я.Submit'),
+
+    //b-menu-vert
+    {
+        block: 'b-menu-vert',
+        content: [
+            { elem: 'item', content: 'Item 1' },
+            { elem: 'item', content: 'Item 2' },
+            { elem: 'item', content: 'Item 3' },
+            { elem: 'separator' },
+            { elem: 'item', content: 'all' }
+        ]
+    },
+    block('b-menu-vert')(
+        elem('item')('Item 1'),
+        elem('item')('Item 2'),
+        elem('item')('Item 3'),
+        elem('separator')(),
+        elem('item')('all')
+    )
+
+];
+
+console.log(JSON.stringify(BEMJSON));
