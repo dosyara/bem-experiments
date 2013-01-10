@@ -1,5 +1,13 @@
 // BEMJSON generator
 var BEMJS = function() {
+
+        /**
+         * Extend helper
+         *
+         * @param dest
+         * @param source
+         * @return {Object}
+         */
         function extend(dest, source) {
             var res = {}, name;
             if (dest) for (name in dest) if (dest.hasOwnProperty(name)) res[name] = dest[name];
@@ -7,12 +15,26 @@ var BEMJS = function() {
             return res;
         }
 
+        /**
+         * Extends property of BEMJSON-node
+         *
+         * @param obj
+         * @param prop
+         * @param values
+         * @return {*}
+         */
         function extendProp(obj, prop, values) {
             (values && prop) && (obj[prop] = (typeof values === 'object') ? extend(obj[prop], values) : values)
 
             return obj;
         }
 
+        /**
+         * Creates property extender
+         *
+         * @param prop
+         * @return {Function}
+         */
         function createPropExtender(prop) {
             return function(vals) {
                 extendProp(this.obj, prop, vals);
@@ -20,6 +42,12 @@ var BEMJS = function() {
             }
         }
 
+        /**
+         * Creates property setter
+         *
+         * @param prop
+         * @return {Function}
+         */
         function createPropSetter(prop) {
             return function(val) {
                 this.obj[prop] = val;
@@ -27,6 +55,12 @@ var BEMJS = function() {
             }
         }
 
+        /**
+         * Main object
+         *
+         * @param params
+         * @return {*}
+         */
         var bemjs = function(params) {
             var bemjsInst = function(cont) {
                 return bemjsInst.build(arguments.length > 1 ? Array.prototype.slice.call(arguments) : cont);
@@ -40,6 +74,9 @@ var BEMJS = function() {
             return bemjsInst.init(params);
         }
 
+        /**
+         *   Base methods for create and augment BEMJSON-node
+         */
         bemjs.fn = {
 
             init: function(params) {
