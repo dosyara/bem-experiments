@@ -101,4 +101,30 @@ var BEMJS = function() {
         };
 
         return bemjs;
-    }();
+    }(),
+
+    // Creates block node
+    block = function(name, params) {
+        var block = BEMJS(params);
+        block.obj.block = name;
+        block.mods = block._createPropExtender('mods');
+
+        return block;
+    },
+
+    // Creates elem node, blockName is optional
+    elem = function(blockName, name, params) {
+        if (typeof name === 'object') {
+            params = name;
+            name = blockName;
+            blockName = undefined;
+        } else if (typeof name === 'undefined') {
+            name = blockName;
+            blockName = undefined;
+        }
+        var elem = blockName ? block(blockName, params) : BEMJS(params);
+        elem.obj.elem = name;
+        elem.elemMods = elem._createPropExtender('elemMods');
+
+        return elem;
+    };
