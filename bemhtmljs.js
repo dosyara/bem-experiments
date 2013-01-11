@@ -49,6 +49,7 @@ var b_ = (function() {
         for (var i = templates.length, tmplItm; i--;) {
             tmplItm = templates[i];
             if (mtch(ctx, tmplItm.desc, mode)) {
+                this.crtTmpl = tmplItm;
 
                 if (typeof tmplItm.tmpl === 'function')
                     return tmplItm.tmpl.call(this, ctx, params);
@@ -59,9 +60,19 @@ var b_ = (function() {
 
     }
 
+    function applyNext(ctx, mode, params) {
+        var tmplDesc = this.crtTmpl.desc;
+        tmplDesc.__flag = +new Date() + '-' + Math.floor(Math.random()*1000000);
+        var res = this.applyTemplates(ctx, mode, params);
+        delete tmplDesc.__flag;
+
+        return res;
+    }
+
     return {
         template: template,
         applyTemplates: applyTemplates,
+        applyNext: applyNext,
         extend: extend
     }
 })();
@@ -156,12 +167,14 @@ b_.template({}, function(ctx, params) {
 
     res = this.extend(res, { tag: this.applyTemplates(ctx, 'tag') });
     if (res.tag) {
-        res = this.extend(res, this.applyTemplates(ctx, 'block'));
-        res = this.extend(res, this.applyTemplates(ctx, 'elem'));
-        res = this.extend(res, { cls: this.applyTemplates(ctx, 'cls') });
-        res = this.extend(res, { js: this.applyTemplates(ctx, 'jsattrs') });
-        res = this.extend(res, { attrs: this.applyTemplates(ctx, 'attrs') });
-        res = this.extend(res, { content: this.applyTemplates(ctx, 'content') });
+        res = this.extend(res,
+            this.applyTemplates(ctx, 'block'),
+            this.applyTemplates(ctx, 'elem'),
+            { cls: this.applyTemplates(ctx, 'cls') },
+            { js: this.applyTemplates(ctx, 'jsattrs') },
+            { attrs: this.applyTemplates(ctx, 'attrs') },
+            { content: this.applyTemplates(ctx, 'content') }
+        );
 
         while (res.content && !isSimple(res.content))
             res.content = this.applyTemplates(res.content, undefined, { parentBlock: res.block });
@@ -206,6 +219,12 @@ b_.template({ mode: 'content' }, function(ctx) {
     return ctx.content || ''
 });
 
+b_.template({ block: 'b-page', mode: undefined }, function(ctx) {
+    return '<!DOCTYPE html>' + this.applyNext({
+        tag: 'html',
+        content: ctx
+    })
+});
 
 b_.template({ block: 'b-page', elem: 'title', mode: 'tag' }, 'title');
 
